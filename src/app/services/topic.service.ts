@@ -20,13 +20,8 @@ export class TopicService {
   };
 
   get(topicId: string): Topic {
-    const t: Topic = { id:-1, name:"Invalid", posts:[]};
-    for(var topic of this.topics){
-      if(String(topic.id) === topicId){
-        return topic;
-      }
-    };
-    return t;
+    const tInvalid: Topic = { id:-1, name:"Invalid", posts:[]};
+    return this.topics.find((topic) => String(topic.id) === topicId)?? tInvalid;
   };
 
   addTopic(topic: Topic): void {
