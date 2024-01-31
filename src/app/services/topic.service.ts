@@ -7,12 +7,11 @@ import { Post } from '../models/post';
 })
 export class TopicService {
   private topics: Topic[];
+  private topic_count: number;
+
   constructor() {
-    this.topics = [
-      { id:1, name:"hello", posts:[]},
-      { id:2, name:"world", posts:[]},
-      { id:3, name:"hehe", posts:[]}
-    ];
+    this.topics = [];
+    this.topic_count = 0;
   }
 
   getAll(): Topic[]{
@@ -25,11 +24,14 @@ export class TopicService {
   };
 
   addTopic(topic: Topic): void {
+    this.topic_count += 1;
+    topic.id = this.topic_count;
     this.topics.push(topic);
   };
 
   addPost(post: Post, topicId: string): void {
     const topic = this.get(topicId);
+    post.id = topic.posts.length + 1;
     topic.posts.push(post);
   };
 }
