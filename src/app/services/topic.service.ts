@@ -3,12 +3,14 @@ import { Topic, Topics } from '../models/topic';
 import { Post } from '../models/post';
 import { ToastController } from '@ionic/angular/standalone';
 import { BehaviorSubject, Observable, first, map } from 'rxjs';
+import { Firestore } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TopicService {
   private readonly toastController = inject(ToastController);
+  private firestore: Firestore = inject(Firestore);
 
   private topics$: BehaviorSubject<Topics> = new BehaviorSubject<Topics>([]);
 
