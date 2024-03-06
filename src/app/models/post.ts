@@ -1,5 +1,7 @@
 export interface Post {
-    id: number;
+    id: string;
     name: string;
-    description: string;
+    description: string
 }
+
+export type Posts = Post[];
