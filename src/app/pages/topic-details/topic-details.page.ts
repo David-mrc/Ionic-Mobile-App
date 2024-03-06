@@ -1,10 +1,11 @@
-import { Component, Input, ViewChild, WritableSignal, computed, inject, signal } from '@angular/core';
+import { Component, Input, ViewChild, WritableSignal, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalController, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonLabel, IonFab, IonFabButton, IonIcon } from '@ionic/angular/standalone';
 import { TopicService } from '../../services/topic.service';
 import { CreatePostModalComponent } from '../../modals/create-post/create-post.component';
 import { Post } from '../../models/post';
+import { computedAsync } from '@appstrophe/ngx-computeasync';
 import { addIcons } from 'ionicons';
 import { addOutline } from 'ionicons/icons';
 
@@ -86,7 +87,7 @@ export class TopicDetailsPage {
   private readonly topicService = inject(TopicService);
   private readonly modalCtrl = inject(ModalController);
 
-  topic = this.topicService.get(this._topicId);
+  topic = computedAsync(() => this.topicService.get(this.topicId));
 
   async openAddPostModale() {
     const modal = await this.modalCtrl.create({

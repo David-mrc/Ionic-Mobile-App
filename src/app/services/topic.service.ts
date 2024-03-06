@@ -1,7 +1,8 @@
-import { Injectable, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Topic, Topics } from '../models/topic';
 import { Post } from '../models/post';
 import { ToastController } from '@ionic/angular/standalone';
+import { BehaviorSubject, Observable, first, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,25 +10,27 @@ import { ToastController } from '@ionic/angular/standalone';
 export class TopicService {
   private readonly toastController = inject(ToastController);
 
-  private topics: WritableSignal<Topics> = signal<Topics>([]);
+  private topics$: BehaviorSubject<Topics> = new BehaviorSubject<Topics>([]);
 
   constructor() { }
 
-  getAll(): Signal<Topics> {
-    return this.topics.asReadonly();
+  getAll(): Observable<Topics> {
+    return this.topics$.asObservable();
   }
 
-  get(topicId: Signal<string>): Signal<Topic | null> {
-    return computed(() => this.topics().find(t => t.id === topicId()) ?? null);
+  get(topicId: string): Observable<Topic | null> {
+    return this.topics$.asObservable().pipe(
+      map(topics => topics.find(t => t.id === topicId) ?? null)
+    )
   }
 
   addTopic(topic: Topic): void {
-    this.topics.set([...this.topics(), topic]);
+    this.topics$.next([...this.topics$.value, topic]);
     this.presentToast('success', 'Topic successfully created');
   }
 
   addPost(post: Post, topicId: string): void {
-    this.topics.update(topics => topics.map(t =>
+    this.topics$.next(this.topics$.value.map(t =>
       // in case of the topic we want to edit, we add the new post to its posts list
       // else we return the existing topic
       t.id === topicId ? { ...t, posts: [...t.posts, post] } : t
@@ -36,12 +39,12 @@ export class TopicService {
   }
 
   deleteTopic(topic: Topic): void {
-    this.topics.update(topics => topics.filter(t => t.id !== topic.id));
+    this.topics$.next(this.topics$.value.filter(t => t.id !== topic.id));
     this.presentToast('success', 'Topic successfully deleted');
   }
 
   deletePost(post: Post, topicId: string): void {
-    this.topics.update(topics => topics.map(t =>
+    this.topics$.next(this.topics$.value.map(t =>
       // in case of the topic we want to edit, we filter its posts list to remove the given post
       // else we return the existing topic
       t.id === topicId
@@ -55,7 +58,7 @@ export class TopicService {
   }
 
   editPost(post: Post, topicId: string): void {
-    this.topics.update(topics => topics.map(t =>
+    this.topics$.next(this.topics$.value.map(t =>
       // in case of the topic we want to edit, we iterate over its posts list to edit the given post
       // else we return the existing topic
       t.id === topicId

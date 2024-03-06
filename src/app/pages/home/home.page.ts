@@ -70,7 +70,7 @@ export class HomePage {
   private readonly topicService = inject(TopicService);
   private readonly modalCtrl = inject(ModalController);
 
-  topics: Signal<Topics> = this.topicService.getAll();
+  topics: Signal<Topics> = toSignal(this.topicService.getAll(), {initialValue: []});
 
   async openAddTopicModale() {
     const modal = await this.modalCtrl.create({
