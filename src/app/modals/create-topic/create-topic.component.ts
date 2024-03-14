@@ -3,7 +3,6 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TopicService } from 'src/app/services/topic.service';
 import { Topic } from 'src/app/models/topic';
-import { generateId } from 'src/app/utils/generate-id';
 
 @Component({
   selector: 'app-create-topic',
@@ -42,16 +41,12 @@ export class CreateTopicModalComponent {
   private readonly fb = inject(FormBuilder);
   private readonly topicService = inject(TopicService);
   private readonly modalCtrl = inject(ModalController);
-  
+
   addTopicForm = this.fb.nonNullable.group({ name: ['', Validators.required] });
 
-  addTopic(): void {
-    const topic: Topic = {
-      ...this.addTopicForm.getRawValue(),
-      id: generateId(),
-      posts: []
-    };
-    this.topicService.addTopic(topic);
+  async addTopic(): Promise<void> {
+    const topic: Partial<Topic> = { ...this.addTopicForm.getRawValue() };
+    await this.topicService.addTopic(topic);
     this.modalCtrl.dismiss();
   }
 }

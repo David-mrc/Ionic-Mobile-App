@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Post } from 'src/app/models/post';
 import { TopicService } from 'src/app/services/topic.service';
-import { generateId } from 'src/app/utils/generate-id';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea, IonList, IonItem, IonInput, IonButton, ModalController } from '@ionic/angular/standalone';
 
 @Component({
@@ -51,21 +50,19 @@ export class CreatePostModalComponent implements OnInit {
   private readonly modalCtrl = inject(ModalController);
 
   ngOnInit(): void {
-    this.addPostForm = this.fb.nonNullable.group({ 
+    this.addPostForm = this.fb.nonNullable.group({
       name: [this.post?.name ?? '', Validators.required],
       description: [this.post?.description ?? '']
     });
   }
 
-  addPost(): void {
-    const post: Post = {
-      ...this.addPostForm.getRawValue(),
-      id: this.post?.id ?? generateId(),
-    };
+  async addPost(): Promise<void> {
     if(this.post?.id) { // edit
-      this.topicService.editPost(post, this.topicId);
+      const post: Post = { id: this.post.id, ...this.addPostForm.getRawValue() };
+      await this.topicService.editPost(post, this.topicId);
     } else { // create
-      this.topicService.addPost(post, this.topicId);
+      const post: Partial<Post> = { ...this.addPostForm.getRawValue() };
+      await this.topicService.addPost(post, this.topicId);
     }
     this.modalCtrl.dismiss();
   }
