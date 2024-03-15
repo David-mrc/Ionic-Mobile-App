@@ -39,7 +39,7 @@ addIcons({ addOutline });
           <ion-item>
             <ion-label>{{ post.name }}</ion-label>
           </ion-item>
-      
+
           <ion-item-options side="end">
             <ion-item-option (click)="deletePost(post)" color="danger">Delete</ion-item-option>
           </ion-item-options>
@@ -59,14 +59,14 @@ addIcons({ addOutline });
   </ion-content>
   `,
   styles: [`
-  div.empty-container {
-    height: calc(100dvh - 72px); // 56px header + 2*8px padding y
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-`],
+    div.empty-container {
+      height: calc(100dvh - 72px); // 56px header + 2*8px padding y
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  `],
   standalone: true,
   imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonLabel, IonFab, IonFabButton, IonIcon, CommonModule, FormsModule]
 })

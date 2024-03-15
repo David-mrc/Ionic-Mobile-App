@@ -1,4 +1,4 @@
-import { Component, Signal, inject } from '@angular/core';
+import { Component, Signal, ViewChild, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonLabel, IonFab, IonFabButton, IonIcon, ModalController } from '@ionic/angular/standalone';
 import { Topic, Topics } from '../../models/topic';
@@ -28,14 +28,18 @@ addIcons({ addOutline });
       </ion-toolbar>
     </ion-header>
 
-    <ion-list>
+    <ion-list #list>
       @for (topic of topics(); track topic.id) {
         <ion-item-sliding>
+          <ion-item-options side="start">
+            <ion-item-option (click)="editTopic(topic)" color="primary">Edit</ion-item-option>
+          </ion-item-options>
+
           <ion-item [routerLink]="['/topics/', topic.id]">
             <ion-label>{{ topic.name }}</ion-label>
           </ion-item>
-      
-          <ion-item-options>
+
+          <ion-item-options side="end">
             <ion-item-option (click)="deleteTopic(topic)" color="danger">Delete</ion-item-option>
           </ion-item-options>
         </ion-item-sliding>
@@ -67,6 +71,8 @@ addIcons({ addOutline });
 })
 export class HomePage {
 
+  @ViewChild('list') list!: IonList;
+
   private readonly topicService = inject(TopicService);
   private readonly modalCtrl = inject(ModalController);
 
@@ -77,6 +83,19 @@ export class HomePage {
       component: CreateTopicModalComponent,
     });
     modal.present();
+
+    await modal.onWillDismiss();
+  }
+
+  async editTopic(topic: Topic) {
+    const modal = await this.modalCtrl.create({
+      component: CreateTopicModalComponent,
+      componentProps: {
+        topic
+      }
+    });
+    modal.present();
+    this.list.closeSlidingItems();
 
     await modal.onWillDismiss();
   }

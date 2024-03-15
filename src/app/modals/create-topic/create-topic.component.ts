@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput, IonButton, ModalController } from '@ionic/angular/standalone';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TopicService } from 'src/app/services/topic.service';
 import { Topic } from 'src/app/models/topic';
 
@@ -11,7 +11,11 @@ import { Topic } from 'src/app/models/topic';
     <ion-header [translucent]="true">
     <ion-toolbar>
       <ion-title>
-        Add Topic
+        @if(this.topic?.id) {
+          Edit Topic
+        } @else {
+          Add Topic
+        }
       </ion-title>
     </ion-toolbar>
   </ion-header>
@@ -36,17 +40,31 @@ import { Topic } from 'src/app/models/topic';
   `],
   imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput, IonButton, ReactiveFormsModule]
 })
-export class CreateTopicModalComponent {
+export class CreateTopicModalComponent implements OnInit {
+  topic?: Topic;
+
+  addTopicForm!: FormGroup;
 
   private readonly fb = inject(FormBuilder);
   private readonly topicService = inject(TopicService);
   private readonly modalCtrl = inject(ModalController);
 
-  addTopicForm = this.fb.nonNullable.group({ name: ['', Validators.required] });
+  ngOnInit(): void {
+    this.addTopicForm = this.fb.nonNullable.group({
+      name: [this.topic?.name ?? '', Validators.required]
+    });
+  }
 
   async addTopic(): Promise<void> {
-    const topic: Partial<Topic> = { ...this.addTopicForm.getRawValue() };
-    await this.topicService.addTopic(topic);
+    const topic: Partial<Topic> = {
+      ...this.addTopicForm.getRawValue()
+    };
+
+    if(this.topic?.id) { // edit
+      await this.topicService.editTopic(topic, this.topic.id);
+    } else { // create
+      await this.topicService.addTopic(topic);
+    }
     this.modalCtrl.dismiss();
   }
 }

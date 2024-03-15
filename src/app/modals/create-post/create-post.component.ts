@@ -11,7 +11,11 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea, IonList, IonI
     <ion-header [translucent]="true">
     <ion-toolbar>
       <ion-title>
-        Add Post
+        @if(this.post?.id) {
+          Edit Post
+        } @else {
+          Add Post
+        }
       </ion-title>
     </ion-toolbar>
   </ion-header>
@@ -41,7 +45,7 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea, IonList, IonI
 })
 export class CreatePostModalComponent implements OnInit {
   topicId!: string;
-  post!: Post;
+  post?: Post;
 
   addPostForm!: FormGroup;
 
@@ -57,11 +61,13 @@ export class CreatePostModalComponent implements OnInit {
   }
 
   async addPost(): Promise<void> {
-    if(this.post?.id) { // edit
-      const post: Post = { id: this.post.id, ...this.addPostForm.getRawValue() };
-      await this.topicService.editPost(post, this.topicId);
+    const post: Partial<Post> = {
+      ...this.addPostForm.getRawValue()
+    };
+
+    if (this.post?.id) { // edit
+      await this.topicService.editPost(post, this.topicId, this.post.id);
     } else { // create
-      const post: Partial<Post> = { ...this.addPostForm.getRawValue() };
       await this.topicService.addPost(post, this.topicId);
     }
     this.modalCtrl.dismiss();

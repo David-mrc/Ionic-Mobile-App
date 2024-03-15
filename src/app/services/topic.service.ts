@@ -4,6 +4,7 @@ import { Post, Posts } from '../models/post';
 import { ToastController } from '@ionic/angular/standalone';
 import { Observable, combineLatestWith, firstValueFrom, map } from 'rxjs';
 import { Firestore, collection, collectionData, doc, docData, addDoc, setDoc, deleteDoc } from '@angular/fire/firestore';
+import { updateDoc } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -61,10 +62,15 @@ export class TopicService {
     this.presentToast('success', 'Post successfully deleted');
   }
 
-  async editPost(post: Post, topicId: string): Promise<void> {
-    const {id, ...content} = post;
-    const postDoc = doc(this.firestore, `topics/${topicId}/posts/${id}`);
-    await setDoc(postDoc, content);
+  async editTopic(topic: Partial<Topic>, topicId: string): Promise<void> {
+    const topicRef = doc(this.topicsRef, topicId);
+    await updateDoc(topicRef, topic);
+    this.presentToast('success', 'Topic successfully modified');
+  }
+
+  async editPost(post: Partial<Post>, topicId: string, postId: string): Promise<void> {
+    const postRef = doc(this.topicsRef, `${topicId}/posts/${postId}`);
+    await updateDoc(postRef, post);
     this.presentToast('success', 'Post successfully modified');
   }
 
