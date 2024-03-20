@@ -1,40 +1,58 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail } from "@angular/fire/auth";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private auth: Auth = inject(Auth);
-  /////// temp
-  email = "hobik95118@sfpixel.com";
-  password = "azerty12"
-  //////
+  private auth: Auth;
 
-  async createUser(
-    email: string, 
-    password: string
-  ) {
-    const user = await createUserWithEmailAndPassword(this.auth, this.email, this.password);
-    sendEmailVerification(user.user);
-  } //: Promise<UserCredential>
+  constructor(private angularFireAuth: Auth) {
+    this.auth = angularFireAuth;
+  }
 
-  signIn(
-    email: string, 
-    password: string
-  ) {
-    signInWithEmailAndPassword(this.auth, this.email, this.password);
-  }//: Promise<UserCredential>
+  async createUser(email: string, password: string): Promise<void> {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
+      await sendEmailVerification(userCredential.user);
+    } catch (error) {
+      throw error;
+    }
+  }
 
-  signOut() {
-    signOut(this.auth);
-  }//: Promise<void>
+  async signIn(email: string, password: string): Promise<void> {
+    try {
+      await signInWithEmailAndPassword(this.auth, email, password);
+    } catch (error) {
+      throw error;
+    }
+  }
 
-  sendPasswordResetEmail() {
-    sendPasswordResetEmail(this.auth, this.email);
+  async signOut(): Promise<void> {
+    try {
+      await signOut(this.auth);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async sendPasswordResetEmail(email: string): Promise<void> {
+    try {
+      await sendPasswordResetEmail(this.auth, email);
+    } catch (error) {
+      throw error;
+    }
   }
   
-  isConnected(){
-
-  }//: User
+  async isConnected(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.auth.onAuthStateChanged((user) => {
+        if (user) {
+          resolve(user);
+        } else {
+          reject("User not signed in.");
+        }
+      });
+    });
+  }
 }
