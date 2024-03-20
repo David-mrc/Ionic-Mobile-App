@@ -4,6 +4,7 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalo
 import { ApplicationConfig, importProvidersFrom } from "@angular/core";
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getAuth, provideAuth } from '@angular/fire/auth';
 import { environment } from "src/environments/environment";
 
 export const config: ApplicationConfig = {
@@ -13,7 +14,8 @@ export const config: ApplicationConfig = {
       provideRouter(routes, withComponentInputBinding()),
       importProvidersFrom(
         provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
-        provideFirestore(() => getFirestore())
+        provideFirestore(() => getFirestore()),
+        provideAuth(() => getAuth()),
       )
   ],
 }

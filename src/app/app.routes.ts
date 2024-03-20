@@ -11,7 +11,6 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'topics',
-    pathMatch: 'full',
+    loadComponent: () => import('./pages/auth/auth.page').then((m) => m.AuthPage),
   },
 ];
