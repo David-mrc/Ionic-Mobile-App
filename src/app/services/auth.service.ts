@@ -1,14 +1,23 @@
 import { Injectable } from "@angular/core";
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail } from "@angular/fire/auth";
+import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail, User, user } from "@angular/fire/auth";
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private auth: Auth;
+  user$: Observable<User | null> | undefined; 
+  userSubscription: Subscription | undefined;
 
   constructor(private angularFireAuth: Auth) {
     this.auth = angularFireAuth;
+    this.user$ = user(this.auth);
+    this.userSubscription = this.user$.subscribe((aUser: User | null) => {
+     console.log(aUser); //TODO remove
+    })
   }
 
   async createUser(email: string, password: string): Promise<void> {
@@ -44,15 +53,7 @@ export class AuthService {
     }
   }
   
-  async isConnected(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.auth.onAuthStateChanged((user) => {
-        if (user) {
-          resolve(user);
-        } else {
-          reject("User not signed in.");
-        }
-      });
-    });
-  }
+   isConnected(): Boolean {
+    return !!this.auth.currentUser;
+   }
 }
