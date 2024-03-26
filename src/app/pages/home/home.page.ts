@@ -3,12 +3,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonLabel, IonFab, IonFabButton, IonIcon, ModalController } from '@ionic/angular/standalone';
 import { Topic, Topics } from '../../models/topic';
 import { TopicService } from '../../services/topic.service';
-import { addOutline } from 'ionicons/icons';
+import { add } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { CreateTopicModalComponent } from '../../modals/create-topic/create-topic.component';
 import { RouterLink } from '@angular/router';
 
-addIcons({ addOutline });
+addIcons({ add });
 
 @Component({
   selector: 'app-home',
@@ -52,7 +52,7 @@ addIcons({ addOutline });
     </ion-list>
     <ion-fab slot="fixed" vertical="bottom" horizontal="end">
       <ion-fab-button (click)="openAddTopicModale()">
-        <ion-icon name="add-outline"></ion-icon>
+        <ion-icon name="add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
   </ion-content>

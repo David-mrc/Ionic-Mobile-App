@@ -3,8 +3,7 @@ import { Topic, Topics } from '../models/topic';
 import { Post, Posts } from '../models/post';
 import { ToastController } from '@ionic/angular/standalone';
 import { Observable, combineLatestWith, firstValueFrom, map } from 'rxjs';
-import { Firestore, collection, collectionData, doc, docData, addDoc, setDoc, deleteDoc } from '@angular/fire/firestore';
-import { updateDoc } from 'firebase/firestore';
+import { Firestore, collection, collectionData, doc, docData, addDoc, updateDoc, deleteDoc } from '@angular/fire/firestore';
 import { presentToast } from 'src/app/helper/toast';
 
 @Injectable({
@@ -20,7 +19,7 @@ export class TopicService {
     return collectionData(this.topicsRef, { idField: 'id' }) as Observable<Topics>;
   }
 
-  get(topicId: string): Observable<Topic | null> {
+  get(topicId: string): Observable<Topic> {
     const topicRef = doc(this.topicsRef, topicId);
     const topic$ = docData(topicRef, { idField: 'id' }) as Observable<Topic>;
     const postsRef = collection(this.topicsRef, `${topicId}/posts`);
@@ -48,12 +47,8 @@ export class TopicService {
     const posts$ = collectionData(postsRef, { idField: 'id' }) as Observable<Posts>;
     const posts = await firstValueFrom(posts$);
 
-    posts.forEach(post => {
-      const postRef = doc(postsRef, post.id);
-      deleteDoc(postRef);
-    });
-    const topicRef = doc(this.topicsRef, topic.id);
-    await deleteDoc(topicRef);
+    await Promise.all(posts.map(post => deleteDoc(doc(postsRef, post.id))));
+    await deleteDoc(doc(this.topicsRef, topic.id));
     presentToast('success', 'Topic successfully deleted', this.toastController);
   }
 
