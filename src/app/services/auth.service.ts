@@ -16,7 +16,6 @@ export class AuthService {
     this.auth = angularFireAuth;
     this.user$ = user(this.auth);
     this.userSubscription = this.user$.subscribe((aUser: User | null) => {
-     console.log(aUser); //TODO remove
     })
   }
 
