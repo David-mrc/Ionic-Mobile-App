@@ -45,7 +45,7 @@ export class LoginPage implements OnInit {
         this.loginForm.getRawValue().password
         );
       presentToast('success', 'Logged in!', this.toastController);
-      await this.router.navigate(['topics']); 
+      await this.router.navigate(['/topics']); 
     } catch (error) {
       presentToast('danger', 'Invalid Password and email combo. Please try again.', this.toastController);
     }
@@ -56,4 +56,17 @@ export class LoginPage implements OnInit {
     presentToast('success', 'Password retrieval email sent! Please check your inbox.', this.toastController);
   }
 
+  async googleSignin() {
+    try {
+      await this.authService.googleSignIn();
+      presentToast('success', 'Logged in!', this.toastController);
+      await this.router.navigate(['/topics']); 
+    } catch (error) {
+      presentToast('danger', 'Google authentication error! Try loggin in another way.', this.toastController);
+    }
+  }
+
+  async googleLogOut() {
+    await this.authService.googleSignOut();
+  } //TODO: remove
 }
