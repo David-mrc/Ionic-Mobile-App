@@ -5,6 +5,7 @@ import { ToastController } from '@ionic/angular/standalone';
 import { Observable, combineLatestWith, firstValueFrom, map } from 'rxjs';
 import { Firestore, collection, collectionData, doc, docData, addDoc, setDoc, deleteDoc } from '@angular/fire/firestore';
 import { updateDoc } from 'firebase/firestore';
+import { presentToast } from 'src/app/helper/toast';
 
 @Injectable({
   providedIn: 'root'
@@ -33,13 +34,13 @@ export class TopicService {
 
   async addTopic(topic: Partial<Topic>): Promise<void> {
     await addDoc(this.topicsRef, topic);
-    this.presentToast('success', 'Topic successfully created');
+    presentToast('success', 'Topic successfully created', this.toastController);
   }
 
   async addPost(post: Partial<Post>, topicId: string): Promise<void> {
     const postsRef = collection(this.topicsRef, `${topicId}/posts`);
     await addDoc(postsRef, post);
-    this.presentToast('success', 'Post successfully created');
+    presentToast('success', 'Post successfully created', this.toastController);
   }
 
   async deleteTopic(topic: Topic): Promise<void> {
@@ -53,35 +54,25 @@ export class TopicService {
     });
     const topicRef = doc(this.topicsRef, topic.id);
     await deleteDoc(topicRef);
-    this.presentToast('success', 'Topic successfully deleted');
+    presentToast('success', 'Topic successfully deleted', this.toastController);
   }
 
   async deletePost(post: Post, topicId: string): Promise<void> {
     const postRef = doc(this.topicsRef, `${topicId}/posts/${post.id}`);
     await deleteDoc(postRef);
-    this.presentToast('success', 'Post successfully deleted');
+    presentToast('success', 'Post successfully deleted', this.toastController);
   }
 
   async editTopic(topic: Partial<Topic>, topicId: string): Promise<void> {
     const topicRef = doc(this.topicsRef, topicId);
     await updateDoc(topicRef, topic);
-    this.presentToast('success', 'Topic successfully modified');
+    presentToast('success', 'Topic successfully modified', this.toastController);
   }
 
   async editPost(post: Partial<Post>, topicId: string, postId: string): Promise<void> {
     const postRef = doc(this.topicsRef, `${topicId}/posts/${postId}`);
     await updateDoc(postRef, post);
-    this.presentToast('success', 'Post successfully modified');
+    presentToast('success', 'Post successfully modified', this.toastController);
   }
 
-  private async presentToast(color: 'success' | 'danger', message: string) {
-    const toast = await this.toastController.create({
-      message,
-      color,
-      duration: 1500,
-      position: 'bottom',
-    });
-
-    await toast.present();
-  }
 }

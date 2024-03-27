@@ -1,3 +1,15 @@
 <ion-app>
+  <ion-header>
+  </ion-header>
   <ion-router-outlet></ion-router-outlet>
+  <ion-footer>
+    @if(isLoggedIn()){
+    <ion-toolbar>
+    <ion-row>
+      <ion-title>Footer Toolbar</ion-title>
+      <ion-button (click)="logOut()"> Log out </ion-button>
+    </ion-row>
+    </ion-toolbar>
+  }
+  </ion-footer>
 </ion-app>

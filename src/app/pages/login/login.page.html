@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Log into your account</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Log in or Register</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <form  (ngSubmit)="loginUser()" [formGroup]="loginForm">
+
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input aria-label="email" formControlName="email" required errorText="Invalid Email"></ion-input>
+    </ion-item>
+    
+    <ion-item>
+      <ion-label position="floating">Password</ion-label>
+      <ion-input aria-label="password" type="password" formControlName="password" required minlength="6"></ion-input>
+    </ion-item>
+    
+    <ion-button type="submit" expand="block" [disabled]="!loginForm.valid">Log In</ion-button>
+  </form>
+  <!-- <ion-button (click)="forgotPassword"  size="small" expand="block">I forgot my Password</ion-button> -->
+  <ion-title class="ion-text-center ion-margin-vertical">Or</ion-title>
+  <ion-item [routerLink]="['/register']">Register</ion-item>
+  <ion-item [routerLink]="['']">Forgot your password?</ion-item>
+
+</ion-content>
