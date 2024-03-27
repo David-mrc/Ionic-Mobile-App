@@ -27,6 +27,10 @@
   </form>
 
   <ion-title class="ion-text-center ion-margin-vertical">Or</ion-title>
+  <ion-button expand="full" (click)="googleSignin()">Google login</ion-button>
+  <ion-button expand="full" (click)="googleLogOut()">Google logout temp</ion-button>
+
+  <ion-title class="ion-text-center ion-margin-vertical">Or</ion-title>
   <ion-item [routerLink]="['/register']">Register</ion-item>
   <ion-item [routerLink]="['/account-recovery']">Forgot your password?</ion-item>
 

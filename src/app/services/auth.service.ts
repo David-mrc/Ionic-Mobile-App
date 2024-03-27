@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail, User, user } from "@angular/fire/auth";
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { GoogleAuth, User as gUser } from "@codetrix-studio/capacitor-google-auth";
+import { isPlatform } from "@ionic/angular";
 
 
 @Injectable({
@@ -11,12 +12,16 @@ export class AuthService {
   private auth: Auth;
   user$: Observable<User | null> | undefined; 
   userSubscription: Subscription | undefined;
+  googleUser: gUser | null = null;
 
   constructor(private angularFireAuth: Auth) {
     this.auth = angularFireAuth;
     this.user$ = user(this.auth);
     this.userSubscription = this.user$.subscribe((aUser: User | null) => {
     })
+    if(!isPlatform("capacitor")) {
+      GoogleAuth.initialize();
+    }
   }
 
   async createUser(email: string, password: string): Promise<void> {
@@ -54,5 +59,23 @@ export class AuthService {
   
    isConnected(): Boolean {
     return !!this.auth.currentUser;
+   }
+
+   async googleSignIn() {
+    this.googleUser = await GoogleAuth.signIn();
+    if (this.googleUser) {
+      //TODO: register if doesn't exist else login firestore
+    }
+    console.log("google user:", this.googleUser);
+   }
+
+   async googleRefresh() {
+    const authCode = await GoogleAuth.refresh();
+    console.log("refresh", authCode);
+   }
+
+   async googleSignOut() {
+    await GoogleAuth.signOut();
+    this.googleUser = null;
    }
 }

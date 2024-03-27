@@ -23,4 +23,8 @@ export class AppComponent {
     this.router.navigate(['']);
     this.authService.signOut();
   }
+
+  async googleLogOut() {
+    await this.authService.googleSignOut();
+  }
 }
