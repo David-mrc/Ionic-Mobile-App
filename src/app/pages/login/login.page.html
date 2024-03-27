@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>login</ion-title>
+    <ion-title>Log into your account</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -26,4 +26,8 @@
     <ion-button type="submit" expand="block" [disabled]="!loginForm.valid">Log In</ion-button>
   </form>
   <!-- <ion-button (click)="forgotPassword"  size="small" expand="block">I forgot my Password</ion-button> -->
+  <ion-title class="ion-text-center ion-margin-vertical">Or</ion-title>
+  <ion-item [routerLink]="['/register']">Register</ion-item>
+  <ion-item [routerLink]="['']">Forgot your password?</ion-item>
+
 </ion-content>

@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet, IonFooter, IonToolbar, IonTitle, IonHeader, IonButton, IonRow } from '@ionic/angular/standalone';
 import { AuthService } from './services/auth.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -11,16 +12,15 @@ import { AuthService } from './services/auth.service';
 })
 export class AppComponent {
   private readonly authService = inject(AuthService);
-
+  private router: Router = inject(Router);
   constructor() {}
 
   isLoggedIn(){
-    console.log(this.authService.isConnected())
     return this.authService.isConnected();
   }
 
   logOut() {
-    console.log("logging out");
+    this.router.navigate(['']);
     this.authService.signOut();
   }
 }
