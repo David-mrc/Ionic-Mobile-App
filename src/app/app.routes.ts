@@ -22,5 +22,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login.page').then( m => m.LoginPage),
     canActivate: [LoggedGuard],
   },
+  {
+    path: 'account-recovery',
+    loadComponent: () => import('./pages/account-recovery/account-recovery.page').then( m => m.AccountRecoveryPage),
+    canActivate: [LoggedGuard],
+  },
+
 
 ];
