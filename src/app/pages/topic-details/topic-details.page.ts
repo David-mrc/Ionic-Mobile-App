@@ -7,10 +7,10 @@ import { CreatePostModalComponent } from '../../modals/create-post/create-post.c
 import { Post } from '../../models/post';
 import { computedAsync } from '@appstrophe/ngx-computeasync';
 import { addIcons } from 'ionicons';
-import { add, people } from 'ionicons/icons';
+import { add, people, pencil, trash } from 'ionicons/icons';
 import { ManageTopicAccessModalComponent } from 'src/app/modals/manage-topic-access/manage-topic-access.component';
 
-addIcons({ add, people });
+addIcons({ add, people, pencil, trash });
 
 @Component({
   selector: 'app-topic-details',
@@ -21,11 +21,13 @@ addIcons({ add, people });
         {{ topic()?.name }}
       </ion-title>
 
-    <ion-buttons slot="end">
-      <ion-button (click)="openManageTopicAccessModale()">
-        <ion-icon slot="icon-only" name="people" color="primary"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+      <ion-buttons slot="end">
+        @if (isCurrentUserOwner()) {
+          <ion-button (click)="openManageTopicAccessModale()">
+            <ion-icon slot="icon-only" name="people" color="primary"></ion-icon>
+          </ion-button>
+        }
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
@@ -40,7 +42,14 @@ addIcons({ add, people });
       @for (post of topic()?.posts; track post.id) {
         <ion-item-sliding>
           <ion-item-options side="start">
-            <ion-item-option (click)="editPost(post)" color="primary">Edit</ion-item-option>
+            <ion-item-option
+              (click)="editPost(post)"
+              color="primary"
+              disabled="{{ !canCurrentUserEdit() }}"
+            >
+              <ion-icon slot="start" name="pencil"></ion-icon>
+              Edit
+            </ion-item-option>
           </ion-item-options>
 
           <ion-item>
@@ -48,7 +57,14 @@ addIcons({ add, people });
           </ion-item>
 
           <ion-item-options side="end">
-            <ion-item-option (click)="deletePost(post)" color="danger">Delete</ion-item-option>
+            <ion-item-option
+              (click)="deletePost(post)"
+              color="danger"
+              disabled="{{ !canCurrentUserEdit() }}"
+            >
+              <ion-icon slot="start" name="trash"></ion-icon>
+              Delete
+            </ion-item-option>
           </ion-item-options>
         </ion-item-sliding>
       } @empty {
@@ -92,7 +108,7 @@ export class TopicDetailsPage {
     return this._topicId();
   }
 
-  private readonly topicService = inject(TopicService);
+  protected readonly topicService = inject(TopicService);
   private readonly modalCtrl = inject(ModalController);
 
   topic = computedAsync(() => this.topicService.get(this.topicId));
@@ -137,5 +153,15 @@ export class TopicDetailsPage {
 
   deletePost(post: Post): void {
     this.topicService.deletePost(post, this._topicId());
+  }
+
+  protected isCurrentUserOwner(): boolean {
+    const topic = this.topic();
+    return !!topic && this.topicService.isCurrentUserOwner(topic);
+  }
+
+  protected canCurrentUserEdit(): boolean {
+    const topic = this.topic();
+    return !!topic && this.topicService.canCurrentUserEdit(topic);
   }
 }

@@ -4,10 +4,11 @@ import { TopicService } from 'src/app/services/topic.service';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea, IonList, IonItem, IonInput, IonButton, IonLabel, IonListHeader, IonAvatar, IonChip, IonIcon, IonSearchbar, IonActionSheet } from '@ionic/angular/standalone';
 import { Topic } from 'src/app/models/topic';
 import { UserService } from 'src/app/services/user.service';
-import { Users } from 'src/app/models/user';
+import { UserProfiles } from 'src/app/models/user-profile';
 import { add, ellipsisHorizontal } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { IonActionSheetCustomEvent, OverlayEventDetail } from '@ionic/core';
+import { firstValueFrom } from 'rxjs';
 
 addIcons({ add, ellipsisHorizontal });
 
@@ -107,7 +108,7 @@ export class ManageTopicAccessModalComponent implements OnInit {
   @ViewChild('search') searchbar!: IonSearchbar;
 
   constributors!: string[];
-  usersFound: Users = [];
+  usersFound: UserProfiles = [];
 
   private readonly topicService = inject(TopicService);
   private readonly userService = inject(UserService);
@@ -154,7 +155,7 @@ export class ManageTopicAccessModalComponent implements OnInit {
 
   async searchContributor(event: any): Promise<void> {
     const query = event.target.value.toLowerCase();
-    this.usersFound = await this.userService.search(query, this.constributors);
+    this.usersFound = await firstValueFrom(this.userService.getByName(query, this.constributors));
   }
 
   async addContributor(username: string): Promise<void> {

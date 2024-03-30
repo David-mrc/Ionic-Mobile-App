@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { ToastController } from '@ionic/angular/standalone';
-import { Observable, combineLatestWith, firstValueFrom, map } from 'rxjs';
-import { Firestore, collection, collectionData, doc, docData, addDoc, setDoc, updateDoc, deleteDoc, query, where, getDocs } from '@angular/fire/firestore';
-import { User, Users } from '../models/user';
+import { Observable } from 'rxjs';
+import { Firestore, collection, collectionData, doc, docData, setDoc, updateDoc, deleteDoc, query, where } from '@angular/fire/firestore';
+import { UserProfile, UserProfiles } from '../models/user-profile';
+import { presentToast } from '../helper/toast';
 
 @Injectable({
   providedIn: 'root'
@@ -13,49 +14,33 @@ export class UserService {
 
   private usersRef = collection(this.firestore, 'users');
 
-  async search(username: string, excluded?: string[]): Promise<Users> {
+  getByName(username: string, ignored?: string[]): Observable<UserProfiles> {
     let constraints = [where("name", "==", username)];
 
-    if (excluded && excluded.length > 0) {
-      constraints.push(where("name", "not-in", excluded));
+    if (ignored && ignored.length > 0) {
+      constraints.push(where("name", "not-in", ignored));
     }
     const q = query(this.usersRef, ...constraints);
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data()})) as Users;
+    return collectionData(q, { idField: 'id' }) as Observable<UserProfiles>;
   }
 
-  getAll(): Observable<Users> {
-    return collectionData(this.usersRef, { idField: 'id' }) as Observable<Users>;
+  getById(userId: string): Observable<UserProfile> {
+    return docData(doc(this.usersRef, userId), { idField: 'id' }) as Observable<UserProfile>;
   }
 
-  get(userId: string): Observable<User> {
-    const topicRef = doc(this.usersRef, userId);
-    return docData(topicRef, { idField: 'id' }) as Observable<User>;
+  async addUser(user: UserProfile): Promise<void> {
+    const {id, ...profile} = user;
+    await setDoc(doc(this.usersRef, id), profile);
+    presentToast('success', 'User successfully created', this.toastController);
   }
 
-  async addUser(user: User): Promise<void> {
-    await addDoc(this.usersRef, user);
-    this.presentToast('success', 'User successfully created');
-  }
-
-  async deleteUser(user: User): Promise<void> {
+  async deleteUser(user: UserProfile): Promise<void> {
     await deleteDoc(doc(this.usersRef, user.id));
-    this.presentToast('success', 'User successfully deleted');
+    presentToast('success', 'User successfully deleted', this.toastController);
   }
 
-  async editUser(user: Partial<User>, userId: string): Promise<void> {
+  async editUser(user: Partial<UserProfile>, userId: string): Promise<void> {
     await updateDoc(doc(this.usersRef, userId), user);
-    this.presentToast('success', 'User successfully modified');
-  }
-
-  private async presentToast(color: 'success' | 'danger', message: string) {
-    const toast = await this.toastController.create({
-      message,
-      color,
-      duration: 1500,
-      position: 'bottom',
-    });
-
-    await toast.present();
+    presentToast('success', 'User successfully modified', this.toastController);
   }
 }

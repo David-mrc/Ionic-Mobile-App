@@ -16,12 +16,17 @@
       <ion-label position="floating">Email</ion-label>
       <ion-input aria-label="email" formControlName="email" required errorText="Invalid Email"></ion-input>
     </ion-item>
-    
+
+    <ion-item>
+      <ion-label position="floating">Username</ion-label>
+      <ion-input aria-label="username" formControlName="username" required minlength="3"></ion-input>
+    </ion-item>
+
     <ion-item>
       <ion-label position="floating">Password</ion-label>
       <ion-input aria-label="password" type="password" formControlName="password" required minlength="6"></ion-input>
     </ion-item>
-    
+
     <ion-button type="submit" expand="block" [disabled]="!registerForm.valid">Register</ion-button>
   </form>
   <ion-item [routerLink]="['']">Cancel</ion-item>

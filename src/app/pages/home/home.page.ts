@@ -3,12 +3,14 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonLabel, IonFab, IonFabButton, IonIcon, ModalController } from '@ionic/angular/standalone';
 import { Topic, Topics } from '../../models/topic';
 import { TopicService } from '../../services/topic.service';
-import { add } from 'ionicons/icons';
+import { add, pencil, trash } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { CreateTopicModalComponent } from '../../modals/create-topic/create-topic.component';
 import { RouterLink } from '@angular/router';
+import { ToastController } from '@ionic/angular';
+import { presentToast } from 'src/app/helper/toast';
 
-addIcons({ add });
+addIcons({ add, pencil, trash });
 
 @Component({
   selector: 'app-home',
@@ -32,7 +34,10 @@ addIcons({ add });
       @for (topic of topics(); track topic.id) {
         <ion-item-sliding>
           <ion-item-options side="start">
-            <ion-item-option (click)="editTopic(topic)" color="primary">Edit</ion-item-option>
+            <ion-item-option (click)="editTopic(topic)" color="primary">
+              <ion-icon slot="start" name="pencil"></ion-icon>
+              Edit
+            </ion-item-option>
           </ion-item-options>
 
           <ion-item [routerLink]="['/topics/', topic.id]">
@@ -40,7 +45,10 @@ addIcons({ add });
           </ion-item>
 
           <ion-item-options side="end">
-            <ion-item-option (click)="deleteTopic(topic)" color="danger">Delete</ion-item-option>
+            <ion-item-option (click)="deleteTopic(topic)" color="danger">
+              <ion-icon slot="start" name="trash"></ion-icon>
+              Delete
+            </ion-item-option>
           </ion-item-options>
         </ion-item-sliding>
       } @empty {
@@ -73,12 +81,13 @@ export class HomePage {
 
   @ViewChild('list') list!: IonList;
 
-  private readonly topicService = inject(TopicService);
+  protected readonly topicService = inject(TopicService);
   private readonly modalCtrl = inject(ModalController);
+  private readonly toastController = inject(ToastController);
 
   topics: Signal<Topics> = toSignal(this.topicService.getAll(), {initialValue: []});
 
-  async openAddTopicModale() {
+  async openAddTopicModale(): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: CreateTopicModalComponent,
     });
@@ -87,7 +96,12 @@ export class HomePage {
     await modal.onWillDismiss();
   }
 
-  async editTopic(topic: Topic) {
+  async editTopic(topic: Topic): Promise<void> {
+    if (!this.topicService.isCurrentUserOwner(topic)) {
+      presentToast('danger', 'This topic can only be edited by its owner', this.toastController);
+      this.list.closeSlidingItems();
+      return;
+    }
     const modal = await this.modalCtrl.create({
       component: CreateTopicModalComponent,
       componentProps: {
@@ -101,6 +115,11 @@ export class HomePage {
   }
 
   deleteTopic(topic: Topic): void {
+    if (!this.topicService.isCurrentUserOwner(topic)) {
+      presentToast('danger', 'This topic can only be deleted by its owner', this.toastController);
+      this.list.closeSlidingItems();
+      return;
+    }
     this.topicService.deleteTopic(topic);
   }
 }
