@@ -150,7 +150,7 @@ export class ManageTopicAccessModalComponent implements OnInit {
 
   ngOnInit(): void {
     const topic = this.topic();
-    this.constributors = [topic.owner, ...topic.editors, ...topic.readers];
+    this.constributors = [topic.owner].concat(topic.editors, topic.readers);
   }
 
   async searchContributor(event: any): Promise<void> {

@@ -44,7 +44,11 @@ export class TopicService {
   }
 
   async addTopic(topic: Partial<Topic>): Promise<void> {
-    await addDoc(this.topicsRef, topic);
+    const user = this.user();
+    if (!user) {
+      throw new Error;
+    }
+    await addDoc(this.topicsRef, { owner: user.name, ...topic });
     presentToast('success', 'Topic successfully created', this.toastController);
   }
 

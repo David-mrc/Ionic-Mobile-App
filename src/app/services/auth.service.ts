@@ -35,7 +35,7 @@ export class AuthService {
     await sendPasswordResetEmail(this.auth, email);
   }
 
-  isConnected(): Boolean {
+  isConnected(): boolean {
     return !!this.auth.currentUser;
   }
 }
