@@ -47,7 +47,6 @@ export class RegisterPage implements OnInit {
         this.registerForm.getRawValue().password
       );
       presentToast('success', 'Succesfully Registered!', this.toastController);
-      await this.router.navigate(['']);
     } catch (error) {
       presentToast('danger', 'User already exists, please try again.', this.toastController);
     }

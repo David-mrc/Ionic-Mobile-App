@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { IonApp, IonRouterOutlet, IonFooter, IonToolbar, IonTitle, IonHeader, IonButton, IonRow } from '@ionic/angular/standalone';
+import { CommonModule } from '@angular/common';
+import { IonApp, IonRouterOutlet, IonFooter, IonToolbar, IonTitle, IonHeader, IonButton, IonRow, IonItem, IonAvatar, IonLabel } from '@ionic/angular/standalone';
 import { AuthService } from './services/auth.service';
 import { Router } from '@angular/router';
 
@@ -8,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
-  imports: [IonApp, IonRouterOutlet, IonFooter, IonToolbar, IonTitle, IonHeader, IonButton, IonRow],
+  imports: [CommonModule, IonApp, IonRouterOutlet, IonFooter, IonToolbar, IonTitle, IonHeader, IonButton, IonRow, IonItem, IonAvatar, IonLabel],
 })
 export class AppComponent {
   private readonly authService = inject(AuthService);
@@ -19,12 +20,20 @@ export class AppComponent {
     return this.authService.isConnected();
   }
 
+  isLoggedInGoogle(){
+    return !!this.authService.googleUser;
+  }
+
+  getGoogleAvatar(): string {
+    return this.authService.googleUser ? this.authService.googleUser.imageUrl : "" ;
+  }
+
+  getGoogleInformation() {
+    return this.authService.googleUser;
+  }
+
   logOut() {
-    this.router.navigate(['']);
     this.authService.signOut();
   }
 
-  async googleLogOut() {
-    await this.authService.googleSignOut();
-  }
 }

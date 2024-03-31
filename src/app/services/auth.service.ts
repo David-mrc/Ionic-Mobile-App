@@ -4,6 +4,7 @@ import { firstValueFrom, Observable, Subscription } from 'rxjs';
 import { GoogleAuth, User as gUser } from "@codetrix-studio/capacitor-google-auth";
 import { isPlatform } from "@ionic/angular";
 import { UserService } from "./user.service";
+import { Router } from "@angular/router";
 
 
 @Injectable({
@@ -16,7 +17,7 @@ export class AuthService {
 
   user$ = user(this.auth);
 
-  constructor() {
+  constructor(private router: Router) {
     if(!isPlatform("capacitor")) {
       GoogleAuth.initialize();
     }
@@ -32,14 +33,21 @@ export class AuthService {
     const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
     await sendEmailVerification(userCredential.user);
     await this.userService.addUser({ id: userCredential.user.uid, name: username });
+    await this.router.navigate(['']);
   }
 
   async signIn(email: string, password: string): Promise<void> {
     await signInWithEmailAndPassword(this.auth, email, password);
+    this.router.navigate(['/topics']);
   }
 
   async signOut(): Promise<void> {
+    if (this.googleUser){
+      await GoogleAuth.signOut();
+      this.googleUser = null;
+    }
     await signOut(this.auth);
+    await this.router.navigate(['']);
   }
 
   async sendPasswordResetEmail(email: string): Promise<void> {
@@ -54,6 +62,7 @@ export class AuthService {
     this.googleUser = await GoogleAuth.signIn();
     if (this.googleUser) {
       //TODO: register if doesn't exist else login firestore
+      this.signIn("hojit81726@ikumaru.com", "azerty123");
     }
     console.log("google user:", this.googleUser);
    }
@@ -63,8 +72,4 @@ export class AuthService {
     console.log("refresh", authCode);
    }
 
-   async googleSignOut() {
-    await GoogleAuth.signOut();
-    this.googleUser = null;
-   }
 }
