@@ -22,6 +22,7 @@ export class RegisterPage implements OnInit {
   registerForm!: FormGroup;
   user = {
     email: '',
+    name: '',
     password: ''
   }
 
@@ -29,25 +30,26 @@ export class RegisterPage implements OnInit {
 
   ngOnInit() {
     this.registerForm = this.fb.nonNullable.group({
-      email: [this.user?.email ?? '', Validators.compose([
+      email: [this.user.email ?? '', Validators.compose([
         Validators.required,
         Validators.email
       ])],
-      password: [this.user?.email ?? '', Validators.required]
+      username: [this.user.name ?? '', Validators.required],
+      password: [this.user.email ?? '', Validators.required]
     });
   }
 
   async registerUser() {
     try {
       await this.authService.createUser(
-        this.registerForm.getRawValue().email, 
+        this.registerForm.getRawValue().email,
+        this.registerForm.getRawValue().username,
         this.registerForm.getRawValue().password
-        );
+      );
       presentToast('success', 'Succesfully Registered!', this.toastController);
       await this.router.navigate(['']);
     } catch (error) {
       presentToast('danger', 'User already exists, please try again.', this.toastController);
     }
   }
-
 }
