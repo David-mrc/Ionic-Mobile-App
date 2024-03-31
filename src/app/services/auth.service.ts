@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail, User, user } from "@angular/fire/auth";
+import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail, signInWithCredential, User, user, GoogleAuthProvider } from "@angular/fire/auth";
 import { firstValueFrom, Observable, Subscription } from 'rxjs';
 import { GoogleAuth, User as gUser } from "@codetrix-studio/capacitor-google-auth";
 import { isPlatform } from "@ionic/angular";
@@ -23,6 +23,9 @@ export class AuthService {
     }
   }
 
+  getCurrentUserInfo() {
+    return this.auth.currentUser;
+  }
 
   async createUser(email: string, username: string, password: string): Promise<void> {
     const usersFound = await firstValueFrom(this.userService.getByName(username));
@@ -33,7 +36,7 @@ export class AuthService {
     const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
     await sendEmailVerification(userCredential.user);
     await this.userService.addUser({ id: userCredential.user.uid, name: username });
-    await this.router.navigate(['']);
+    await this.router.navigate(['/topics']);
   }
 
   async signIn(email: string, password: string): Promise<void> {
@@ -61,10 +64,14 @@ export class AuthService {
    async googleSignIn() {
     this.googleUser = await GoogleAuth.signIn();
     if (this.googleUser) {
-      //TODO: register if doesn't exist else login firestore
-      this.signIn("hojit81726@ikumaru.com", "azerty123");
+      let username = this.googleUser.givenName + this.googleUser.familyName as string;
+      const usersFound = await firstValueFrom(this.userService.getByName(username));
+      if (usersFound.length == 0) {
+        this.createUser(this.googleUser.email, username, this.googleUser.id);
+      } else {
+        await this.signIn(this.googleUser.email, this.googleUser.id); 
+      }
     }
-    console.log("google user:", this.googleUser);
    }
 
    async googleRefresh() {
