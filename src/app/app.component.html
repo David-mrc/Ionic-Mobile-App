@@ -6,7 +6,21 @@
     @if(isLoggedIn()){
     <ion-toolbar>
     <ion-row>
-      <ion-title>Footer Toolbar</ion-title>
+      <ion-item *ngIf="isLoggedInGoogle()">
+        <ion-avatar class="ion-margin-end">
+          <img [src]="getGoogleInformation()?.imageUrl">
+        </ion-avatar>
+        <ion-label>
+          {{getGoogleInformation()?.givenName}} {{getGoogleInformation()?.familyName}}
+          <p>{{getGoogleInformation()?.email}}</p>
+        </ion-label>
+      </ion-item>
+      <ion-item *ngIf="!isLoggedInGoogle()">
+        <ion-label>
+        {{getGenericUserInfo().name}}
+        <p>{{getGenericUserInfo().email}}</p>
+      </ion-label>
+    </ion-item>
       <ion-button (click)="logOut()"> Log out </ion-button>
     </ion-row>
     </ion-toolbar>

@@ -25,9 +25,11 @@
     
     <ion-button type="submit" expand="block" [disabled]="!loginForm.valid">Log In</ion-button>
   </form>
-  <!-- <ion-button (click)="forgotPassword"  size="small" expand="block">I forgot my Password</ion-button> -->
+
+  <ion-title class="ion-text-center ion-margin-vertical">Or</ion-title>
+  <ion-button expand="full" (click)="googleSignin()">Google login</ion-button>
   <ion-title class="ion-text-center ion-margin-vertical">Or</ion-title>
   <ion-item [routerLink]="['/register']">Register</ion-item>
-  <ion-item [routerLink]="['']">Forgot your password?</ion-item>
+  <ion-item [routerLink]="['/account-recovery']">Forgot your password?</ion-item>
 
 </ion-content>
