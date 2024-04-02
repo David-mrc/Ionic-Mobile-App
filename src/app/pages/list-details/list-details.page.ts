@@ -98,7 +98,7 @@ addIcons({ add, people, pencil, trash });
       }
     </ion-list>
 
-    <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="margin-bottom: 70px;">
+    <ion-fab slot="fixed" vertical="top" horizontal="center" [edge]="true">
       <ion-fab-button (click)="openAddMovieModale()">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
