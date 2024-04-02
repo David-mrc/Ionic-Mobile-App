@@ -152,7 +152,13 @@ export class ManageListAccessModalComponent implements OnInit {
 
   ngOnInit(): void {
     const list = this.list();
-    this.constributors = [list.owner].concat(list.editors, list.readers);
+    this.constributors = [list.owner];
+    this.constributors = list.editors 
+      ? this.constributors.concat(list.editors) 
+      : this.constributors;
+    this.constributors = list.readers 
+      ? this.constributors.concat(list.readers) 
+      : this.constributors;
   }
 
   async searchContributor(event: any): Promise<void> {
