@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput, IonButton, ModalController } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput, IonButton, ModalController, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MovieListService } from 'src/app/services/movie-list.service';
 import { MovieList } from 'src/app/models/movie-list';
@@ -27,7 +27,17 @@ import { MovieList } from 'src/app/models/movie-list';
           <ion-input formControlName="name" label="Name" errorText="Name is required"></ion-input>
         </ion-item>
       </ion-list>
-      <ion-button type="submit" [disabled]="addListForm.invalid" class="submit-button">Validate</ion-button>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button expand="block" (click)="dismiss()">Cancel</ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button expand="block" type="submit" [disabled]="addListForm.invalid">Validate
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </form>
   </ion-content>
   `,
@@ -38,7 +48,7 @@ import { MovieList } from 'src/app/models/movie-list';
       width: 100%;
     }
   `],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput, IonButton, ReactiveFormsModule]
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput, IonButton, ReactiveFormsModule, IonGrid, IonRow, IonCol]
 })
 export class CreateListModalComponent implements OnInit {
   list?: MovieList;
@@ -65,6 +75,10 @@ export class CreateListModalComponent implements OnInit {
     } else { // create
       await this.movieListService.addList(list);
     }
+    this.modalCtrl.dismiss();
+  }
+
+  dismiss() {
     this.modalCtrl.dismiss();
   }
 }

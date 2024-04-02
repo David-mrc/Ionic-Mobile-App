@@ -1,7 +1,7 @@
 import { Component, OnInit, Signal, ViewChild, inject } from '@angular/core';
 import { NgTemplateOutlet } from "@angular/common";
 import { MovieListService } from 'src/app/services/movie-list.service';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea, IonList, IonItem, IonInput, IonButton, IonLabel, IonListHeader, IonAvatar, IonChip, IonIcon, IonSearchbar, IonActionSheet } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea, IonList, IonItem, IonInput, IonButton, IonLabel, IonListHeader, IonAvatar, IonChip, IonIcon, IonSearchbar, IonActionSheet, ModalController } from '@ionic/angular/standalone';
 import { MovieList } from 'src/app/models/movie-list';
 import { UserService } from 'src/app/services/user.service';
 import { UserProfiles } from 'src/app/models/user-profile';
@@ -58,6 +58,7 @@ addIcons({ add, ellipsisHorizontal });
         <ng-container *ngTemplateOutlet="userTemplate; context: { $implicit: reader, type: 'reader' }"/>
       }
     </ion-list>
+    <ion-button class="submit-button" (click)="dismiss()">OK</ion-button>
   </ion-content>
 
   <ng-template #userTemplate let-username let-type="type">
@@ -112,6 +113,7 @@ export class ManageListAccessModalComponent implements OnInit {
 
   private readonly movieListService = inject(MovieListService);
   private readonly userService = inject(UserService);
+  private readonly modalCtrl = inject(ModalController);
 
   deleteActionButton = {
     text: 'Delete',
@@ -203,5 +205,9 @@ export class ManageListAccessModalComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  dismiss() {
+    this.modalCtrl.dismiss();
   }
 }
