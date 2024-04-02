@@ -3,7 +3,8 @@ export interface Movie {
     title: string;
     description: string;
     runningTime: number;
-    releaseDate: Date;
+    releaseDate: string;
+    image: string;
 }
 
 export type Movies = Movie[];

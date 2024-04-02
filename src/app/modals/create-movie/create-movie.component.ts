@@ -35,17 +35,28 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea, IonList, IonI
         </ion-item>
         <ion-item lines="none">
           <ion-label>Release date</ion-label>
-          <ion-datetime-button
-            formControlName="releaseDate"
-            label="Release date"
-            errorText="Release date is required"
-            datetime="datetime"
-          ></ion-datetime-button>
+          <ion-datetime-button label="Release date" datetime="datetime"></ion-datetime-button>
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
-              <ion-datetime id="datetime" presentation="date" max="{{ ISODate }}" [preferWheel]="true"></ion-datetime>
+              <ion-datetime
+                formControlName="releaseDate"
+                id="datetime"
+                presentation="date"
+                max="{{ maxISODate }}"
+                errorText="Release date is required"
+                [preferWheel]="true"
+              ></ion-datetime>
             </ng-template>
           </ion-modal>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-label>Image</ion-label>
+          <input
+            type="file"
+            name="image"
+            errorText="Image is required"
+            (change)="onFileSelected($event)"
+          >
         </ion-item>
       </ion-list>
       <ion-button type="submit" [disabled]="addMovieForm.invalid" class="submit-button">Validate</ion-button>
@@ -67,7 +78,9 @@ export class CreateMovieModalComponent implements OnInit {
 
   addMovieForm!: FormGroup;
 
-  ISODate: string;
+  maxISODate: string;
+  currentISODate: string;
+  image: File = new File([""], "");
 
   private readonly fb = inject(FormBuilder);
   private readonly movieListService = inject(MovieListService);
@@ -75,8 +88,10 @@ export class CreateMovieModalComponent implements OnInit {
 
   constructor() {
     let date = new Date();
+    date.setHours(0, 0, 0, 0);
+    this.currentISODate = date.toISOString();
     date.setFullYear(date.getFullYear() + 10);
-    this.ISODate = date.toISOString();
+    this.maxISODate = date.toISOString();
   }
 
   ngOnInit(): void {
@@ -87,7 +102,7 @@ export class CreateMovieModalComponent implements OnInit {
         Validators.required,
         Validators.min(1)
       ])],
-      releaseDate: [this.movie?.releaseDate ?? new Date(), Validators.required],
+      releaseDate: [this.movie?.releaseDate ?? this.currentISODate, Validators.required],
     });
   }
 
@@ -97,10 +112,19 @@ export class CreateMovieModalComponent implements OnInit {
     };
 
     if (this.movie?.id) { // edit
-      await this.movieListService.editMovie(movie, this.listId, this.movie.id);
+      await this.movieListService.editMovie(movie, this.image, this.listId, this.movie.id);
     } else { // create
-      await this.movieListService.addMovie(movie, this.listId);
+      await this.movieListService.addMovie(movie, this.image, this.listId);
     }
     this.modalCtrl.dismiss();
+  }
+
+  protected onFileSelected(event: any) {
+    this.image = event.target.files[0];
+    const extension = this.image.name.split(".").pop();
+
+    if (extension !== "jpg" && extension !== "jpeg" && extension !== "png") {
+      this.image = new File([""], "");
+    }
   }
 }

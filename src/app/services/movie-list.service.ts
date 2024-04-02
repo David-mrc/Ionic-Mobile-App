@@ -8,12 +8,14 @@ import { presentToast } from 'src/app/helper/toast';
 import { computedAsync } from '@appstrophe/ngx-computeasync';
 import { AuthService } from './auth.service';
 import { UserService } from './user.service';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MovieListService {
   private readonly authService = inject(AuthService);
+  private readonly storageService = inject(StorageService);
   private readonly userService = inject(UserService);
   private readonly toastController = inject(ToastController);
   private readonly firestore = inject(Firestore);
@@ -52,9 +54,15 @@ export class MovieListService {
     presentToast('success', 'Movie list successfully created', this.toastController);
   }
 
-  async addMovie(movie: Partial<Movie>, listId: string): Promise<void> {
+  async addMovie(movie: Partial<Movie>, image: File, listId: string): Promise<void> {
     const moviesRef = collection(this.listsRef, `${listId}/movies`);
-    await addDoc(moviesRef, movie);
+    const movieRef = await addDoc(moviesRef, movie);
+
+    if (image.name !== "") {
+      await this.storageService.uploadMovieImage(image, listId, movieRef.id);
+      const imageURL = await this.storageService.getMovieImageURL(listId, movieRef.id);
+      await updateDoc(movieRef, { image: imageURL });
+    }
     presentToast('success', 'Movie successfully created', this.toastController);
   }
 
@@ -63,13 +71,14 @@ export class MovieListService {
     const movies$ = collectionData(moviesRef, { idField: 'id' }) as Observable<Movies>;
     const movies = await firstValueFrom(movies$);
 
-    await Promise.all(movies.map(movie => deleteDoc(doc(moviesRef, movie.id))));
+    await Promise.all(movies.map(movie => this.deleteMovie(movie, list.id)));
     await deleteDoc(doc(this.listsRef, list.id));
     presentToast('success', 'Movie list successfully deleted', this.toastController);
   }
 
   async deleteMovie(movie: Movie, listId: string): Promise<void> {
     const movieRef = doc(this.listsRef, `${listId}/movies/${movie.id}`);
+    await this.storageService.deleteMovieImage(listId, movie.id);
     await deleteDoc(movieRef);
     presentToast('success', 'Movie successfully deleted', this.toastController);
   }
@@ -79,8 +88,13 @@ export class MovieListService {
     presentToast('success', 'Movie list successfully modified', this.toastController);
   }
 
-  async editMovie(movie: Partial<Movie>, listId: string, movieId: string): Promise<void> {
+  async editMovie(movie: Partial<Movie>, image: File, listId: string, movieId: string): Promise<void> {
     const movieRef = doc(this.listsRef, `${listId}/movies/${movieId}`);
+
+    if (image.name !== "") {
+      await this.storageService.uploadMovieImage(image, listId, movieId);
+      movie.image = await this.storageService.getMovieImageURL(listId, movieId);
+    }
     await updateDoc(movieRef, movie);
     presentToast('success', 'Movie successfully modified', this.toastController);
   }

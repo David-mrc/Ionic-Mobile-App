@@ -1,7 +1,7 @@
 import { Component, Input, ViewChild, WritableSignal, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ModalController, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonLabel, IonFab, IonFabButton, IonIcon, IonButtons, IonButton } from '@ionic/angular/standalone';
+import { ModalController, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonLabel, IonFab, IonFabButton, IonIcon, IonButtons, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import { MovieListService } from '../../services/movie-list.service';
 import { CreateMovieModalComponent } from '../../modals/create-movie/create-movie.component';
 import { Movie } from '../../models/movie';
@@ -53,7 +53,30 @@ addIcons({ add, people, pencil, trash });
           </ion-item-options>
 
           <ion-item>
-            <ion-label>{{ movie.title }}</ion-label>
+            <ion-card>
+              <ion-grid>
+                <ion-row>
+                  <ion-col size-xs="4" size-sm="3" size-md="3" size-lg="2" size-xl="2">
+                    <img alt="Movie image" src="{{ movie.image }}" width="100%" height="auto"/>
+                  </ion-col>
+                  <ion-col>
+                    <ion-card-header>
+                      <ion-card-title>{{ movie.title }}</ion-card-title>
+                    </ion-card-header>
+                    <ion-card-content>
+                      <ion-label>
+                        Release date: {{ movie.releaseDate.split("T")[0] }}
+                      </ion-label>
+                      <ion-label>
+                        Running time: {{ movie.runningTime }} minutes
+                      </ion-label>
+                      {{ movie.description }}
+                    </ion-card-content>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+            </ion-card>
           </ion-item>
 
           <ion-item-options side="end">
@@ -92,7 +115,7 @@ addIcons({ add, people, pencil, trash });
     }
   `],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonLabel, IonFab, IonFabButton, IonIcon, IonButtons, IonButton, CommonModule, FormsModule]
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonLabel, IonFab, IonFabButton, IonIcon, IonButtons, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonGrid, IonRow, IonCol, CommonModule, FormsModule]
 })
 export class ListDetailsPage {
 
