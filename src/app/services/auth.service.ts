@@ -69,7 +69,7 @@ export class AuthService {
       if (usersFound.length == 0) {
         this.createUser(this.googleUser.email, username, this.googleUser.id);
       } else {
-        await this.signIn(this.googleUser.email, this.googleUser.id); 
+        await this.signIn(this.googleUser.email, this.googleUser.id);
       }
     }
    }

@@ -2,28 +2,28 @@ import { Component, Input, ViewChild, WritableSignal, inject, signal } from '@an
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalController, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonLabel, IonFab, IonFabButton, IonIcon, IonButtons, IonButton } from '@ionic/angular/standalone';
-import { TopicService } from '../../services/topic.service';
-import { CreatePostModalComponent } from '../../modals/create-post/create-post.component';
-import { Post } from '../../models/post';
+import { MovieListService } from '../../services/movie-list.service';
+import { CreateMovieModalComponent } from '../../modals/create-movie/create-movie.component';
+import { Movie } from '../../models/movie';
 import { computedAsync } from '@appstrophe/ngx-computeasync';
 import { addIcons } from 'ionicons';
 import { add, people, pencil, trash } from 'ionicons/icons';
-import { ManageTopicAccessModalComponent } from 'src/app/modals/manage-topic-access/manage-topic-access.component';
+import { ManageListAccessModalComponent } from 'src/app/modals/manage-list-access/manage-list-access.component';
 
 addIcons({ add, people, pencil, trash });
 
 @Component({
-  selector: 'app-topic-details',
+  selector: 'app-list-details',
   template: `
   <ion-header [translucent]="true">
     <ion-toolbar>
       <ion-title>
-        {{ topic()?.name }}
+        {{ list()?.name }}
       </ion-title>
 
       <ion-buttons slot="end">
         @if (isCurrentUserOwner()) {
-          <ion-button (click)="openManageTopicAccessModale()">
+          <ion-button (click)="openManageListAccessModale()">
             <ion-icon slot="icon-only" name="people" color="primary"></ion-icon>
           </ion-button>
         }
@@ -34,16 +34,16 @@ addIcons({ add, people, pencil, trash });
   <ion-content [fullscreen]="true">
     <ion-header collapse="condense">
       <ion-toolbar>
-        <ion-title size="large">{{ topic()?.name }}</ion-title>
+        <ion-title size="large">{{ list()?.name }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
-    <ion-list #list>
-      @for (post of topic()?.posts; track post.id) {
+    <ion-list #ionList>
+      @for (movie of list()?.movies; track movie.id) {
         <ion-item-sliding>
           <ion-item-options side="start">
             <ion-item-option
-              (click)="editPost(post)"
+              (click)="editMovie(movie)"
               color="primary"
               disabled="{{ !canCurrentUserEdit() }}"
             >
@@ -53,12 +53,12 @@ addIcons({ add, people, pencil, trash });
           </ion-item-options>
 
           <ion-item>
-            <ion-label>{{ post.name }}</ion-label>
+            <ion-label>{{ movie.title }}</ion-label>
           </ion-item>
 
           <ion-item-options side="end">
             <ion-item-option
-              (click)="deletePost(post)"
+              (click)="deleteMovie(movie)"
               color="danger"
               disabled="{{ !canCurrentUserEdit() }}"
             >
@@ -69,14 +69,14 @@ addIcons({ add, people, pencil, trash });
         </ion-item-sliding>
       } @empty {
         <div class="empty-container">
-          <strong>There are no Post yet.</strong>
+          <strong>There are no movies yet.</strong>
           <p>You can create one clicking the "+" button below.</p>
         </div>
       }
     </ion-list>
 
     <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-      <ion-fab-button (click)="openAddPostModale()">
+      <ion-fab-button (click)="openAddMovieModale()">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
@@ -94,30 +94,30 @@ addIcons({ add, people, pencil, trash });
   standalone: true,
   imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonLabel, IonFab, IonFabButton, IonIcon, IonButtons, IonButton, CommonModule, FormsModule]
 })
-export class TopicDetailsPage {
+export class ListDetailsPage {
 
-  private _topicId: WritableSignal<string> = signal('');
+  private _listId: WritableSignal<string> = signal('');
 
-  @ViewChild('list') list!: IonList;
+  @ViewChild('ionList') ionList!: IonList;
 
   @Input({ required: true })
-  set topicId(topicId: string) {
-    this._topicId.set(topicId);
+  set listId(listId: string) {
+    this._listId.set(listId);
   };
-  get topicId() {
-    return this._topicId();
+  get listId() {
+    return this._listId();
   }
 
-  protected readonly topicService = inject(TopicService);
+  protected readonly movieListService = inject(MovieListService);
   private readonly modalCtrl = inject(ModalController);
 
-  topic = computedAsync(() => this.topicService.get(this.topicId));
+  list = computedAsync(() => this.movieListService.get(this.listId));
 
-  async openAddPostModale() {
+  async openAddMovieModale() {
     const modal = await this.modalCtrl.create({
-      component: CreatePostModalComponent,
+      component: CreateMovieModalComponent,
       componentProps: {
-        topicId: this._topicId()
+        listId: this._listId()
       }
     });
     modal.present();
@@ -125,11 +125,11 @@ export class TopicDetailsPage {
     await modal.onWillDismiss();
   }
 
-  async openManageTopicAccessModale() {
+  async openManageListAccessModale() {
     const modal = await this.modalCtrl.create({
-      component: ManageTopicAccessModalComponent,
+      component: ManageListAccessModalComponent,
       componentProps: {
-        topic: this.topic
+        list: this.list
       }
     });
     modal.present();
@@ -137,31 +137,31 @@ export class TopicDetailsPage {
     await modal.onWillDismiss();
   }
 
-  async editPost(post: Post) {
+  async editMovie(movie: Movie) {
     const modal = await this.modalCtrl.create({
-      component: CreatePostModalComponent,
+      component: CreateMovieModalComponent,
       componentProps: {
-        topicId: this._topicId(),
-        post
+        listId: this._listId(),
+        movie
       }
     });
     modal.present();
-    this.list.closeSlidingItems();
+    this.ionList.closeSlidingItems();
 
     await modal.onWillDismiss();
   }
 
-  deletePost(post: Post): void {
-    this.topicService.deletePost(post, this._topicId());
+  deleteMovie(movie: Movie): void {
+    this.movieListService.deleteMovie(movie, this._listId());
   }
 
   protected isCurrentUserOwner(): boolean {
-    const topic = this.topic();
-    return !!topic && this.topicService.isCurrentUserOwner(topic);
+    const list = this.list();
+    return !!list && this.movieListService.isCurrentUserOwner(list);
   }
 
   protected canCurrentUserEdit(): boolean {
-    const topic = this.topic();
-    return !!topic && this.topicService.canCurrentUserEdit(topic);
+    const list = this.list();
+    return !!list && this.movieListService.canCurrentUserEdit(list);
   }
 }

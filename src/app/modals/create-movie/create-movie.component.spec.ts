@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { CreatePostModalComponent } from './create-post.component';
+import { CreateMovieModalComponent } from './create-movie.component';
 
-describe('CreatePostModalComponent', () => {
-  let component: CreatePostModalComponent;
-  let fixture: ComponentFixture<CreatePostModalComponent>;
+describe('CreateMovieModalComponent', () => {
+  let component: CreateMovieModalComponent;
+  let fixture: ComponentFixture<CreateMovieModalComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CreatePostModalComponent ],
+      declarations: [ CreateMovieModalComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CreatePostModalComponent);
+    fixture = TestBed.createComponent(CreateMovieModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

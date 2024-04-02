@@ -3,13 +3,13 @@ import { AuthGuard, LoggedGuard } from 'src/app/guards/AuthGuard';
 
 export const routes: Routes = [
   {
-    path: 'topics',
+    path: 'lists',
     loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage),
     canActivate: [AuthGuard],
   },
   {
-    path: 'topics/:topicId',
-    loadComponent: () => import('./pages/topic-details/topic-details.page').then((m) => m.TopicDetailsPage),
+    path: 'lists/:listId',
+    loadComponent: () => import('./pages/list-details/list-details.page').then((m) => m.ListDetailsPage),
     canActivate: [AuthGuard],
   },
   {

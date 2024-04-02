@@ -1,8 +1,8 @@
 import { Component, OnInit, Signal, ViewChild, inject } from '@angular/core';
 import { NgTemplateOutlet } from "@angular/common";
-import { TopicService } from 'src/app/services/topic.service';
+import { MovieListService } from 'src/app/services/movie-list.service';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea, IonList, IonItem, IonInput, IonButton, IonLabel, IonListHeader, IonAvatar, IonChip, IonIcon, IonSearchbar, IonActionSheet } from '@ionic/angular/standalone';
-import { Topic } from 'src/app/models/topic';
+import { MovieList } from 'src/app/models/movie-list';
 import { UserService } from 'src/app/services/user.service';
 import { UserProfiles } from 'src/app/models/user-profile';
 import { add, ellipsisHorizontal } from 'ionicons/icons';
@@ -13,13 +13,13 @@ import { firstValueFrom } from 'rxjs';
 addIcons({ add, ellipsisHorizontal });
 
 @Component({
-  selector: 'app-manage-topic-access',
+  selector: 'app-manage-list-access',
   standalone: true,
   template: `
     <ion-header [translucent]="true">
     <ion-toolbar>
       <ion-title>
-        Manage Topic Access
+        Manage List Access
       </ion-title>
     </ion-toolbar>
   </ion-header>
@@ -41,20 +41,20 @@ addIcons({ add, ellipsisHorizontal });
       <ion-list-header>
         <ion-label>Owner</ion-label>
       </ion-list-header>
-      <ng-container *ngTemplateOutlet="userTemplate; context: { $implicit: topic().owner, type: 'owner' }"/>
+      <ng-container *ngTemplateOutlet="userTemplate; context: { $implicit: list().owner, type: 'owner' }"/>
     </ion-list>
 
     <ion-list>
       <ion-list-header>
         <ion-label>Editors</ion-label>
       </ion-list-header>
-      @for(editor of topic().editors; track topic().editors) {
+      @for(editor of list().editors; track list().editors) {
         <ng-container *ngTemplateOutlet="userTemplate; context: { $implicit: editor, type: 'editor' }"/>
       }
       <ion-list-header>
         <ion-label>Readers</ion-label>
       </ion-list-header>
-      @for(reader of topic().readers; track topic().readers) {
+      @for(reader of list().readers; track list().readers) {
         <ng-container *ngTemplateOutlet="userTemplate; context: { $implicit: reader, type: 'reader' }"/>
       }
     </ion-list>
@@ -102,15 +102,15 @@ addIcons({ add, ellipsisHorizontal });
   `],
   imports: [IonHeader, IonToolbar, IonTitle, IonTextarea, IonContent, IonList, IonItem, IonInput, IonButton, IonLabel, IonListHeader, IonAvatar, IonChip, IonIcon, IonSearchbar, IonActionSheet, NgTemplateOutlet]
 })
-export class ManageTopicAccessModalComponent implements OnInit {
-  topic!: Signal<Topic>;
+export class ManageListAccessModalComponent implements OnInit {
+  list!: Signal<MovieList>;
 
   @ViewChild('search') searchbar!: IonSearchbar;
 
   constributors!: string[];
   usersFound: UserProfiles = [];
 
-  private readonly topicService = inject(TopicService);
+  private readonly movieListService = inject(MovieListService);
   private readonly userService = inject(UserService);
 
   deleteActionButton = {
@@ -149,8 +149,8 @@ export class ManageTopicAccessModalComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    const topic = this.topic();
-    this.constributors = [topic.owner].concat(topic.editors, topic.readers);
+    const list = this.list();
+    this.constributors = [list.owner].concat(list.editors, list.readers);
   }
 
   async searchContributor(event: any): Promise<void> {
@@ -159,34 +159,34 @@ export class ManageTopicAccessModalComponent implements OnInit {
   }
 
   async addContributor(username: string): Promise<void> {
-    const topic = this.topic();
-    const readers = [...(topic.readers ?? []), username];
-    await this.topicService.editTopic({ readers }, topic.id);
+    const list = this.list();
+    const readers = [...(list.readers ?? []), username];
+    await this.movieListService.editList({ readers }, list.id);
     this.searchbar.value = null;
     this.constributors.push(username);
     this.usersFound = [];
   }
 
   async deleteContributor(username: string): Promise<void> {
-    const topic = this.topic();
-    const editors = (topic.editors ?? []).filter(editor => editor !== username);
-    const readers = (topic.readers ?? []).filter(reader => reader !== username);
-    await this.topicService.editTopic({ editors, readers }, topic.id);
+    const list = this.list();
+    const editors = (list.editors ?? []).filter(editor => editor !== username);
+    const readers = (list.readers ?? []).filter(reader => reader !== username);
+    await this.movieListService.editList({ editors, readers }, list.id);
     this.constributors = this.constributors.filter(contributor => contributor !== username);
   }
 
   async toReader(username: string): Promise<void> {
-    const topic = this.topic();
-    const editors = (topic.editors ?? []).filter(editor => editor !== username);
-    const readers = [...(topic.readers ?? []), username];
-    await this.topicService.editTopic({ editors, readers }, topic.id);
+    const list = this.list();
+    const editors = (list.editors ?? []).filter(editor => editor !== username);
+    const readers = [...(list.readers ?? []), username];
+    await this.movieListService.editList({ editors, readers }, list.id);
   }
 
   async toEditor(username: string): Promise<void> {
-    const topic = this.topic();
-    const readers = (topic.readers ?? []).filter(reader => reader !== username);
-    const editors = [...(topic.editors ?? []), username];
-    await this.topicService.editTopic({ editors, readers }, topic.id);
+    const list = this.list();
+    const readers = (list.readers ?? []).filter(reader => reader !== username);
+    const editors = [...(list.editors ?? []), username];
+    await this.movieListService.editList({ editors, readers }, list.id);
   }
 
   protected processAction(event: IonActionSheetCustomEvent<OverlayEventDetail>, username: string): void {
