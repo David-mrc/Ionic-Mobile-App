@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Movie } from 'src/app/models/movie';
 import { MovieListService } from 'src/app/services/movie-list.service';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea, IonList, IonItem, IonInput, IonButton, IonDatetimeButton, IonDatetime, IonModal, IonLabel, ModalController } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea, IonList, IonItem, IonInput, IonButton, IonDatetimeButton, IonDatetime, IonModal, IonLabel, ModalController, IonRow, IonGrid, IonCol } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-create-movie',
@@ -59,7 +59,18 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea, IonList, IonI
           >
         </ion-item>
       </ion-list>
-      <ion-button type="submit" [disabled]="addMovieForm.invalid" class="submit-button">Validate</ion-button>
+      
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button expand="block" (click)="dismiss()">Cancel</ion-button>
+          </ion-col>
+          <ion-col>
+          <ion-button expand="block" type="submit" [disabled]="addMovieForm.invalid" >Validate</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
     </form>
   </ion-content>
   `,
@@ -70,7 +81,7 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonTextarea, IonList, IonI
       width: 100%;
     }
   `],
-  imports: [IonHeader, IonToolbar, IonTitle, IonTextarea, IonContent, IonList, IonItem, IonInput, IonButton, IonDatetimeButton, IonDatetime, IonModal, IonLabel, ReactiveFormsModule]
+  imports: [IonHeader, IonToolbar, IonTitle, IonTextarea, IonContent, IonList, IonItem, IonInput, IonButton, IonDatetimeButton, IonDatetime, IonModal, IonLabel, ReactiveFormsModule, IonRow, IonGrid, IonCol]
 })
 export class CreateMovieModalComponent implements OnInit {
   listId!: string;
@@ -126,5 +137,9 @@ export class CreateMovieModalComponent implements OnInit {
     if (extension !== "jpg" && extension !== "jpeg" && extension !== "png") {
       this.image = new File([""], "");
     }
+  }
+
+  dismiss() {
+    this.modalCtrl.dismiss();
   }
 }
