@@ -36,12 +36,12 @@ export class AuthService {
     const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
     await sendEmailVerification(userCredential.user);
     await this.userService.addUser({ id: userCredential.user.uid, name: username });
-    await this.router.navigate(['/topics']);
+    await this.router.navigate(['/lists']);
   }
 
   async signIn(email: string, password: string): Promise<void> {
     await signInWithEmailAndPassword(this.auth, email, password);
-    this.router.navigate(['/topics']);
+    this.router.navigate(['/lists']);
   }
 
   async signOut(): Promise<void> {
