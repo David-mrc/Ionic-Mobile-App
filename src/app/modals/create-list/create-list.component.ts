@@ -1,33 +1,33 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput, IonButton, ModalController } from '@ionic/angular/standalone';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TopicService } from 'src/app/services/topic.service';
-import { Topic } from 'src/app/models/topic';
+import { MovieListService } from 'src/app/services/movie-list.service';
+import { MovieList } from 'src/app/models/movie-list';
 
 @Component({
-  selector: 'app-create-topic',
+  selector: 'app-create-list',
   standalone: true,
   template: `
     <ion-header [translucent]="true">
     <ion-toolbar>
       <ion-title>
-        @if(this.topic?.id) {
-          Edit Topic
+        @if(this.list?.id) {
+          Edit Movie List
         } @else {
-          Add Topic
+          Add Movie List
         }
       </ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-content [fullscreen]="true">
-    <form (ngSubmit)="addTopic()" [formGroup]="addTopicForm">
+    <form (ngSubmit)="addList()" [formGroup]="addListForm">
       <ion-list>
         <ion-item lines="none">
           <ion-input formControlName="name" label="Name" errorText="Name is required"></ion-input>
         </ion-item>
       </ion-list>
-      <ion-button type="submit" [disabled]="addTopicForm.invalid" class="submit-button">Validate</ion-button>
+      <ion-button type="submit" [disabled]="addListForm.invalid" class="submit-button">Validate</ion-button>
     </form>
   </ion-content>
   `,
@@ -40,30 +40,30 @@ import { Topic } from 'src/app/models/topic';
   `],
   imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput, IonButton, ReactiveFormsModule]
 })
-export class CreateTopicModalComponent implements OnInit {
-  topic?: Topic;
+export class CreateListModalComponent implements OnInit {
+  list?: MovieList;
 
-  addTopicForm!: FormGroup;
+  addListForm!: FormGroup;
 
   private readonly fb = inject(FormBuilder);
-  private readonly topicService = inject(TopicService);
+  private readonly movieListService = inject(MovieListService);
   private readonly modalCtrl = inject(ModalController);
 
   ngOnInit(): void {
-    this.addTopicForm = this.fb.nonNullable.group({
-      name: [this.topic?.name ?? '', Validators.required]
+    this.addListForm = this.fb.nonNullable.group({
+      name: [this.list?.name ?? '', Validators.required]
     });
   }
 
-  async addTopic(): Promise<void> {
-    const topic: Partial<Topic> = {
-      ...this.addTopicForm.getRawValue()
+  async addList(): Promise<void> {
+    const list: Partial<MovieList> = {
+      ...this.addListForm.getRawValue()
     };
 
-    if(this.topic?.id) { // edit
-      await this.topicService.editTopic(topic, this.topic.id);
+    if(this.list?.id) { // edit
+      await this.movieListService.editList(list, this.list.id);
     } else { // create
-      await this.topicService.addTopic(topic);
+      await this.movieListService.addList(list);
     }
     this.modalCtrl.dismiss();
   }

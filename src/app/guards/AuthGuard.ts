@@ -28,7 +28,7 @@ export const LoggedGuard = () => {
     take(1),
     map(user => {
       if (user) {
-        router.navigate(['/topics']);
+        router.navigate(['/lists']);
         return false;
       } else {
         return true;

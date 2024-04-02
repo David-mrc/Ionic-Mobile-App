@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonApp, IonRouterOutlet, IonFooter, IonToolbar, IonTitle, IonHeader, IonButton, IonRow, IonItem, IonAvatar, IonLabel } from '@ionic/angular/standalone';
 import { AuthService } from './services/auth.service';
-import { Router } from '@angular/router';
 import { mergeMap, of } from 'rxjs';
 import { UserService } from './services/user.service';
 import { computedAsync } from '@appstrophe/ngx-computeasync';

@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { ManageTopicAccessModalComponent } from './manage-topic-access.component';
+import { ManageListAccessModalComponent } from './manage-list-access.component';
 
-describe('ManageTopicAccessModalComponent', () => {
-  let component: ManageTopicAccessModalComponent;
-  let fixture: ComponentFixture<ManageTopicAccessModalComponent>;
+describe('ManageListAccessModalComponent', () => {
+  let component: ManageListAccessModalComponent;
+  let fixture: ComponentFixture<ManageListAccessModalComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ManageTopicAccessModalComponent ],
+      declarations: [ ManageListAccessModalComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ManageTopicAccessModalComponent);
+    fixture = TestBed.createComponent(ManageListAccessModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));
