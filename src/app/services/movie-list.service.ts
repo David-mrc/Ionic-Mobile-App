@@ -78,7 +78,10 @@ export class MovieListService {
 
   async deleteMovie(movie: Movie, listId: string): Promise<void> {
     const movieRef = doc(this.listsRef, `${listId}/movies/${movie.id}`);
-    await this.storageService.deleteMovieImage(listId, movie.id);
+
+    if (movie.image && movie.image != "") {
+      await this.storageService.deleteMovieImage(listId, movie.id);
+    }
     await deleteDoc(movieRef);
     presentToast('success', 'Movie successfully deleted', this.toastController);
   }
