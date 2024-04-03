@@ -98,11 +98,13 @@ addIcons({ add, people, pencil, trash });
       }
     </ion-list>
 
-    <ion-fab slot="fixed" vertical="top" horizontal="center" [edge]="true">
-      <ion-fab-button (click)="openAddMovieModale()">
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
+    @if (canCurrentUserEdit()) {
+      <ion-fab slot="fixed" vertical="top" horizontal="center" [edge]="true">
+        <ion-fab-button (click)="openAddMovieModale()">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    }
   </ion-content>
   `,
   styles: [`
